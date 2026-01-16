@@ -62,7 +62,7 @@
 
         .maps-clickable {
             position: absolute;
-            bottom: 35%;
+            bottom: 30%;
             left: 50%;
             transform: translateX(-50%);
             width: 250px;
@@ -77,13 +77,14 @@
 
         .presentes-clickable {
             position: absolute;
-            bottom: 20%;
+            bottom: 10%;
             left: 50%;
             transform: translateX(-50%);
-            width: 200px;
-            height: 80px;
+            width: 280px;
+            height: 100px;
             cursor: pointer;
             display: none;
+            z-index: 100;
         }
 
         .presentes-clickable.show {
@@ -165,7 +166,7 @@
         };
 
         var TEMPOS = {
-            img2: 5000,
+            img2: 2000,
             img3: 2000,
             img4: 2000
         };
@@ -202,7 +203,8 @@
 
         function atualizarImagem() {
             var imgKey = 'img' + etapaAtual;
-            gifDisplay.src = IMAGENS[imgKey];
+            var timestamp = new Date().getTime();
+            gifDisplay.src = IMAGENS[imgKey] + '?t=' + timestamp;
             
             if (etapaAtual === 1) {
                 clickArea.classList.remove('hidden');
