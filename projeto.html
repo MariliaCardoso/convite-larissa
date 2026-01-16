@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convite - Larissa 15 Anos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        #container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            max-height: 100vh;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .gif-display {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .click-area {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            cursor: pointer;
+        }
+
+        .click-text {
+            position: absolute;
+            top: 80px;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+
+        .click-text img {
+            max-width: 80%;
+            height: auto;
+        }
+
+        .maps-clickable {
+            position: absolute;
+            bottom: 35%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 250px;
+            height: 70px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .maps-clickable.show {
+            display: block;
+        }
+
+        .presentes-clickable {
+            position: absolute;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 80px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .presentes-clickable.show {
+            display: block;
+        }
+
+        .voltar-clickable {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            cursor: pointer;
+            display: none;
+        }
+
+        .voltar-clickable.show {
+            display: block;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .botao-som {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            z-index: 1000;
+            transition: transform 0.2s;
+        }
+
+        .botao-som:active {
+            transform: scale(0.9);
+        }
+
+        .botao-som img {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <img id="gifDisplay" class="gif-display" src="" alt="Convite">
+
+        <div id="clickArea" class="click-area hidden">
+            <div class="click-text">
+                <img src="clique.png" alt="Clique para abrir">
+            </div>
+        </div>
+
+        <a id="mapsLink" href="" target="_blank" class="maps-clickable"></a>
+        <div id="presentesLink" class="presentes-clickable"></div>
+        <div id="voltarLink" class="voltar-clickable"></div>
+        
+        <div id="botaoSom" class="botao-som">
+            <img id="iconeSom" src="som-ligado.png" alt="Som">
+        </div>
+    </div>
+
+    <audio id="audioFundo" loop>
+        <source src="Alice's Theme (From Alice in Wonderland_Soundtrack Version) - Danny Elfman (youtube).mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        var EXTENSAO = 'gif';
+        
+        var IMAGENS = {
+            img1: '1.' + EXTENSAO,
+            img2: '2.' + EXTENSAO,
+            img3: '3.' + EXTENSAO,
+            img4: '4.' + EXTENSAO,
+            img5: '5.' + EXTENSAO,
+            img6: '6.' + EXTENSAO
+        };
+
+        var TEMPOS = {
+            img2: 5000,
+            img3: 2000,
+            img4: 2000
+        };
+
+        var LINK_MAPS = 'https://www.google.com/maps/place/Inove+Festas+e+Eventos/@-20.4936435,-43.8608431,17z/data=!4m15!1m8!3m7!1s0xa1599153c53aa1:0x15c4b5df58e56940!2sInove+Festas+e+Eventos!8m2!3d-20.4936435!4d-43.8608431!10e1!16s%2Fg%2F11mqj5zldg!3m5!1s0xa1599153c53aa1:0x15c4b5df58e56940!8m2!3d-20.4936435!4d-43.8608431!16s%2Fg%2F11mqj5zldg?hl=pt-BR&entry=ttu&g_ep=EgoyMDI2MDExMy4wIKXMDSoKLDEwMDc5MjA2OUgBUAM%3D';
+        
+        var audioFundo = document.getElementById('audioFundo');
+        var botaoSom = document.getElementById('botaoSom');
+        var iconeSom = document.getElementById('iconeSom');
+        var somLigado = false;
+
+        var etapaAtual = 1;
+        var gifDisplay = document.getElementById('gifDisplay');
+        var clickArea = document.getElementById('clickArea');
+        var mapsLink = document.getElementById('mapsLink');
+        var presentesLink = document.getElementById('presentesLink');
+        var voltarLink = document.getElementById('voltarLink');
+
+        mapsLink.href = LINK_MAPS;
+
+        function toggleSom() {
+            if (somLigado) {
+                audioFundo.pause();
+                iconeSom.src = 'som-desligado.png';
+                somLigado = false;
+            } else {
+                audioFundo.play().catch(function(error) {
+                    console.log('Erro ao reproduzir áudio:', error);
+                });
+                iconeSom.src = 'som-ligado.png';
+                somLigado = true;
+            }
+        }
+
+        function atualizarImagem() {
+            var imgKey = 'img' + etapaAtual;
+            gifDisplay.src = IMAGENS[imgKey];
+            
+            if (etapaAtual === 1) {
+                clickArea.classList.remove('hidden');
+            } else {
+                clickArea.classList.add('hidden');
+            }
+
+            if (etapaAtual === 5) {
+                mapsLink.classList.add('show');
+                presentesLink.classList.add('show');
+                voltarLink.classList.remove('show');
+            } else if (etapaAtual === 6) {
+                mapsLink.classList.remove('show');
+                presentesLink.classList.remove('show');
+                voltarLink.classList.add('show');
+            } else {
+                mapsLink.classList.remove('show');
+                presentesLink.classList.remove('show');
+                voltarLink.classList.remove('show');
+            }
+        }
+
+        function irParaPresentes() {
+            etapaAtual = 6;
+            atualizarImagem();
+        }
+
+        function voltarParaInformacoes() {
+            etapaAtual = 5;
+            atualizarImagem();
+        }
+
+        function iniciarAnimacao() {
+            if (etapaAtual !== 1) {
+                return;
+            }
+
+            clickArea.classList.add('hidden');
+            
+            audioFundo.play().catch(function(error) {
+                console.log('Erro ao reproduzir áudio:', error);
+            });
+            somLigado = true;
+            iconeSom.src = 'som-ligado.png';
+
+            etapaAtual = 2;
+            atualizarImagem();
+
+            setTimeout(function() {
+                etapaAtual = 3;
+                atualizarImagem();
+            }, TEMPOS.img2);
+
+            setTimeout(function() {
+                etapaAtual = 4;
+                atualizarImagem();
+            }, TEMPOS.img2 + TEMPOS.img3);
+
+            setTimeout(function() {
+                etapaAtual = 5;
+                atualizarImagem();
+            }, TEMPOS.img2 + TEMPOS.img3 + TEMPOS.img4);
+        }
+
+        clickArea.addEventListener('click', iniciarAnimacao);
+        botaoSom.addEventListener('click', toggleSom);
+        presentesLink.addEventListener('click', irParaPresentes);
+        voltarLink.addEventListener('click', voltarParaInformacoes);
+
+        atualizarImagem();
+    </script>
+</body>
+</html>
